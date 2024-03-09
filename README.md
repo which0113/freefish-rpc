@@ -25,8 +25,8 @@ freefish-rpc框架
 
 ```
 
-├── registry           -> 注册中心相关功能
-├── model              -> 模型数据存放
-├── server             -> 服务启动配置
-└── serialize          -> 序列化与反序列化
+├── registry               -> 注册中心相关功能
+├── model                  -> 模型数据存放
+├── server                 -> 服务启动配置
+└── serialize              -> 序列化与反序列化
 ```
