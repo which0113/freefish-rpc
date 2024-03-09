@@ -12,7 +12,7 @@
         <module>example-consumer</module>
         <module>example-provider</module>
         <module>example-common</module>
-        <module>freefish-rpc-easy</module>
+        <module>freefish-rpc-core</module>
     </modules>
 
     <properties>
