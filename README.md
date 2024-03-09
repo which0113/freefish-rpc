@@ -7,7 +7,7 @@
 
 FreeFish-RPC 是核心基于 Etcd + Vert.x 的高性能和轻量级 RPC 框架，提供服务注册、发现、负载均衡等功能。
 
-<img src="doc/rpc.png" style="zoom:66%;"  alt="image"/>
+<img src="doc/rpc.png" style="zoom:66%;" alt="image"/>
 
 ## 功能&设计
 
