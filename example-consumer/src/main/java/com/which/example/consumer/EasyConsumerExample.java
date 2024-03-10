@@ -13,7 +13,7 @@ public class EasyConsumerExample {
 
     public static void main(String[] args) {
         // 动态代理 获取 userService
-        UserService userService = ServiceProxyFactory.getProxy(UserService.class);
+        UserService userService = ServiceProxyFactory.getMockProxy(UserService.class);
         User user = new User();
         user.setName("which");
         // 调用
@@ -23,5 +23,8 @@ public class EasyConsumerExample {
         } else {
             System.out.println("user == null");
         }
+
+        long number = userService.getNumber();
+        System.out.println(number);
     }
 }
