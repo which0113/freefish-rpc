@@ -1,0 +1,2 @@
+hessian=com.which.rpc.serializer.HessianSerializer
+fastjson=com.which.rpc.serializer.JsonSerializer

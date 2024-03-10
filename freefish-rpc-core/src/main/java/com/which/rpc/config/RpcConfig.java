@@ -2,6 +2,8 @@ package com.which.rpc.config;
 
 import lombok.Data;
 
+import static com.which.rpc.serializer.SerializerKeys.JDK;
+
 /**
  * RPC 框架配置
  *
@@ -34,5 +36,10 @@ public class RpcConfig {
      * 模拟调用
      */
     private boolean mock = false;
+
+    /**
+     * 序列化器
+     */
+    private String serializer = JDK;
 
 }

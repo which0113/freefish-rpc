@@ -1,0 +1,2 @@
+jdk=com.which.rpc.serializer.JdkSerializer
+kryo=com.which.rpc.serializer.KryoSerializer
