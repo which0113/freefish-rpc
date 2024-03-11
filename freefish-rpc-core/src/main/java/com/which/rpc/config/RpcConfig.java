@@ -30,7 +30,7 @@ public class RpcConfig {
     /**
      * 服务器端口号
      */
-    private Integer serverPort = 8080;
+    private Integer serverPort = 8888;
 
     /**
      * 模拟调用
@@ -41,5 +41,10 @@ public class RpcConfig {
      * 序列化器
      */
     private String serializer = JDK;
+
+    /**
+     * 注册配置中心
+     */
+    private RegistryConfig registryConfig = new RegistryConfig();
 
 }

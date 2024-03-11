@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+import static com.which.rpc.constant.RpcConstant.DEFAULT_SERVICE_VERSION;
+
 /**
  * RPC 请求
  *
@@ -27,6 +29,11 @@ public class RpcRequest implements Serializable {
      * 方法名称
      */
     private String methodName;
+
+    /**
+     * 服务版本
+     */
+    private String serviceVersion = DEFAULT_SERVICE_VERSION;
 
     /**
      * 参数类型列表
