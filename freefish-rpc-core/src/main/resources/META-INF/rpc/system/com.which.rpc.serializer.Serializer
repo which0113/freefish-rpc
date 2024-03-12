@@ -1,2 +1,4 @@
 hessian=com.which.rpc.serializer.HessianSerializer
 fastjson=com.which.rpc.serializer.JsonSerializer
+jdk=com.which.rpc.serializer.JdkSerializer
+kryo=com.which.rpc.serializer.KryoSerializer
