@@ -9,7 +9,7 @@ import com.which.rpc.registry.LocalRegistry;
 import com.which.rpc.registry.Registry;
 import com.which.rpc.registry.RegistryFactory;
 import com.which.rpc.server.HttpServer;
-import com.which.rpc.server.VertxHttpServer;
+import com.which.rpc.server.tcp.VertxTcpServer;
 
 /**
  * 简易服务提供者示例
@@ -38,8 +38,8 @@ public class EasyProviderExample {
             throw new RuntimeException(e);
         }
 
-        // 启动 web 服务
-        HttpServer httpServer = new VertxHttpServer();
+        // 启动 tcp 服务
+        HttpServer httpServer = new VertxTcpServer();
         httpServer.doStart(serviceMetaInfo.getServicePort());
     }
 }
