@@ -3,6 +3,8 @@ package com.which.rpc.proxy;
 import cn.hutool.core.collection.CollUtil;
 import com.which.rpc.RpcApplication;
 import com.which.rpc.config.RpcConfig;
+import com.which.rpc.loadbalancer.LoadBalancer;
+import com.which.rpc.loadbalancer.LoadBalancerFactory;
 import com.which.rpc.model.RpcRequest;
 import com.which.rpc.model.RpcResponse;
 import com.which.rpc.model.ServiceMetaInfo;
@@ -12,10 +14,11 @@ import com.which.rpc.serializer.Serializer;
 import com.which.rpc.serializer.SerializerFactory;
 import com.which.rpc.server.tcp.VertxTcpClient;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.which.rpc.constant.RpcConstant.DEFAULT_SERVICE_VERSION;
 
@@ -49,9 +52,6 @@ public class ServiceProxy implements InvocationHandler {
                 .args(args)
                 .build();
         try {
-            // 序列化
-            byte[] bodyBytes = serializer.serialize(rpcRequest);
-
             // 从注册中心获取服务提供者请求地址
             RpcConfig rpcConfig = RpcApplication.getRpcConfig();
             Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
@@ -62,15 +62,19 @@ public class ServiceProxy implements InvocationHandler {
             if (CollUtil.isEmpty(serviceMetaInfoList)) {
                 throw new RuntimeException("暂无服务地址");
             }
-            // 暂时先取第一个
-            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
+
+            // 负载均衡
+            LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
+            // 将调用方法名（请求路径）作为负载均衡参数
+            Map<String, Object> requestParams = new HashMap<>();
+            requestParams.put("methodName", rpcRequest.getMethodName());
+            ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
 
             // 发送 TCP 请求
             RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo);
             return rpcResponse.getData();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("调用失败");
         }
-        return null;
     }
 }

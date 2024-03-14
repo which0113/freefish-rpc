@@ -2,6 +2,7 @@ package com.which.rpc.config;
 
 import lombok.Data;
 
+import static com.which.rpc.loadbalancer.LoadBalancerKeys.ROUND_ROBIN;
 import static com.which.rpc.serializer.SerializerKeys.JDK;
 
 /**
@@ -46,5 +47,10 @@ public class RpcConfig {
      * 注册配置中心
      */
     private RegistryConfig registryConfig = new RegistryConfig();
+
+    /**
+     * 负载均衡器
+     */
+    private String loadBalancer = ROUND_ROBIN;
 
 }

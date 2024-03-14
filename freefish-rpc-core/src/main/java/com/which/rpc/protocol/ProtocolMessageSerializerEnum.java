@@ -56,7 +56,6 @@ public enum ProtocolMessageSerializerEnum {
         return null;
     }
 
-
     /**
      * 根据 value 获取枚举
      *
