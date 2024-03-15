@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static com.which.rpc.protocol.ProtocolConstant.PROTOCOL_MAGIC;
+import static com.which.rpc.protocol.ProtocolConstant.PROTOCOL_VERSION;
+
 /**
  * TCP 客户端
  *
@@ -48,8 +51,8 @@ public class VertxTcpClient {
                     // 构造消息
                     ProtocolMessage<RpcRequest> protocolMessage = new ProtocolMessage<>();
                     ProtocolMessage.Header header = new ProtocolMessage.Header();
-                    header.setMagic(ProtocolConstant.PROTOCOL_MAGIC);
-                    header.setVersion(ProtocolConstant.PROTOCOL_VERSION);
+                    header.setMagic(PROTOCOL_MAGIC);
+                    header.setVersion(PROTOCOL_VERSION);
                     header.setSerializer((byte) ProtocolMessageSerializerEnum.getEnumByValue(RpcApplication.getRpcConfig().getSerializer()).getKey());
                     header.setType((byte) ProtocolMessageTypeEnum.REQUEST.getKey());
                     // 生成全局请求 ID
@@ -78,10 +81,8 @@ public class VertxTcpClient {
                             }
                     );
                     socket.handler(bufferHandlerWrapper);
-
                 });
-
-        RpcResponse rpcResponse = responseFuture.get();
+        RpcResponse rpcResponse = responseFuture.join();
         // 记得关闭连接
         netClient.close();
         return rpcResponse;

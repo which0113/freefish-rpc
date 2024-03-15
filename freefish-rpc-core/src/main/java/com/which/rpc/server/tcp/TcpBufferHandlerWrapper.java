@@ -14,6 +14,9 @@ import static com.which.rpc.protocol.ProtocolConstant.MESSAGE_HEADER_LENGTH;
  */
 public class TcpBufferHandlerWrapper implements Handler<Buffer> {
 
+    /**
+     * 解析器，用于解决半包、粘包问题
+     */
     private final RecordParser recordParser;
 
     public TcpBufferHandlerWrapper(Handler<Buffer> bufferHandler) {

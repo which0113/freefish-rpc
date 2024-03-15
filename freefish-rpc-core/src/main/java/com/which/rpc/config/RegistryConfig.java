@@ -2,6 +2,8 @@ package com.which.rpc.config;
 
 import lombok.Data;
 
+import static com.which.rpc.registry.RegistryKeys.ETCD;
+
 /**
  * RPC 框架注册中心配置
  *
@@ -13,7 +15,7 @@ public class RegistryConfig {
     /**
      * 注册中心类别
      */
-    private String registry = "etcd";
+    private String registry = ETCD;
 
     /**
      * 注册中心地址
