@@ -1,4 +1,4 @@
-package com.which.example.consumer;
+package com.which.example.test;
 
 import com.which.rpc.config.RpcConfig;
 import com.which.rpc.utils.ConfigUtils;

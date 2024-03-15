@@ -151,27 +151,24 @@ public class EtcdRegistry implements Registry {
     @Override
     public void heartBeat() {
         // 10 秒续签一次
-        CronUtil.schedule("*/10 * * * * *", new Task() {
-            @Override
-            public void execute() {
-                // 遍历本节点所有的 key
-                for (String key : localRegisterNodeKeySet) {
-                    try {
-                        List<KeyValue> keyValues = kvClient.get(ByteSequence.from(key, StandardCharsets.UTF_8))
-                                .get()
-                                .getKvs();
-                        // 该节点已过期（需要重启节点才能重新注册）
-                        if (CollUtil.isEmpty(keyValues)) {
-                            continue;
-                        }
-                        // 节点未过期，重新注册（相当于续签）
-                        KeyValue keyValue = keyValues.get(0);
-                        String value = keyValue.getValue().toString(StandardCharsets.UTF_8);
-                        ServiceMetaInfo serviceMetaInfo = JSONUtil.toBean(value, ServiceMetaInfo.class);
-                        register(serviceMetaInfo);
-                    } catch (Exception e) {
-                        throw new RuntimeException(key + "续签失败", e);
+        CronUtil.schedule("*/10 * * * * *", (Task) () -> {
+            // 遍历本节点所有的 key
+            for (String key : localRegisterNodeKeySet) {
+                try {
+                    List<KeyValue> keyValues = kvClient.get(ByteSequence.from(key, StandardCharsets.UTF_8))
+                            .get()
+                            .getKvs();
+                    // 该节点已过期（需要重启节点才能重新注册）
+                    if (CollUtil.isEmpty(keyValues)) {
+                        continue;
                     }
+                    // 节点未过期，重新注册（相当于续签）
+                    KeyValue keyValue = keyValues.get(0);
+                    String value = keyValue.getValue().toString(StandardCharsets.UTF_8);
+                    ServiceMetaInfo serviceMetaInfo = JSONUtil.toBean(value, ServiceMetaInfo.class);
+                    register(serviceMetaInfo);
+                } catch (Exception e) {
+                    throw new RuntimeException(key + "续签失败", e);
                 }
             }
         });

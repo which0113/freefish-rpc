@@ -3,6 +3,8 @@ package com.which.rpc.proxy;
 import cn.hutool.core.collection.CollUtil;
 import com.which.rpc.RpcApplication;
 import com.which.rpc.config.RpcConfig;
+import com.which.rpc.fault.retry.RetryStrategy;
+import com.which.rpc.fault.retry.RetryStrategyFactory;
 import com.which.rpc.loadbalancer.LoadBalancer;
 import com.which.rpc.loadbalancer.LoadBalancerFactory;
 import com.which.rpc.model.RpcRequest;
@@ -10,8 +12,6 @@ import com.which.rpc.model.RpcResponse;
 import com.which.rpc.model.ServiceMetaInfo;
 import com.which.rpc.registry.Registry;
 import com.which.rpc.registry.RegistryFactory;
-import com.which.rpc.serializer.Serializer;
-import com.which.rpc.serializer.SerializerFactory;
 import com.which.rpc.server.tcp.VertxTcpClient;
 
 import java.lang.reflect.InvocationHandler;
@@ -38,11 +38,7 @@ public class ServiceProxy implements InvocationHandler {
      * @return 对象
      */
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // 指定序列化器
-        String serializerName = RpcApplication.getRpcConfig().getSerializer();
-        final Serializer serializer = SerializerFactory.getInstance(serializerName);
-
+    public Object invoke(Object proxy, Method method, Object[] args) {
         // 构造请求
         String serviceName = method.getDeclaringClass().getName();
         RpcRequest rpcRequest = RpcRequest.builder()
@@ -51,6 +47,7 @@ public class ServiceProxy implements InvocationHandler {
                 .parameterTypes(method.getParameterTypes())
                 .args(args)
                 .build();
+
         try {
             // 从注册中心获取服务提供者请求地址
             RpcConfig rpcConfig = RpcApplication.getRpcConfig();
@@ -70,8 +67,11 @@ public class ServiceProxy implements InvocationHandler {
             requestParams.put("methodName", rpcRequest.getMethodName());
             ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
 
-            // 发送 TCP 请求
-            RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo);
+            // 使用重试机制
+            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
+            RpcResponse rpcResponse = retryStrategy.doRetry(() ->
+                    VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+            );
             return rpcResponse.getData();
         } catch (Exception e) {
             throw new RuntimeException("调用失败");
