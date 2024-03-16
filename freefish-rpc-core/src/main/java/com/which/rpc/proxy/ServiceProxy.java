@@ -5,6 +5,8 @@ import com.which.rpc.RpcApplication;
 import com.which.rpc.config.RpcConfig;
 import com.which.rpc.fault.retry.RetryStrategy;
 import com.which.rpc.fault.retry.RetryStrategyFactory;
+import com.which.rpc.fault.tolerant.TolerantStrategy;
+import com.which.rpc.fault.tolerant.TolerantStrategyFactory;
 import com.which.rpc.loadbalancer.LoadBalancer;
 import com.which.rpc.loadbalancer.LoadBalancerFactory;
 import com.which.rpc.model.RpcRequest;
@@ -66,15 +68,20 @@ public class ServiceProxy implements InvocationHandler {
         requestParams.put("methodName", rpcRequest.getMethodName());
         ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
 
-        // 使用重试机制
+        // rpc 请求
+        RpcResponse rpcResponse;
         try {
+            // 使用重试机制
             RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
-            RpcResponse rpcResponse = retryStrategy.doRetry(() ->
+            rpcResponse = retryStrategy.doRetry(() ->
                     VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
             );
             return rpcResponse.getData();
         } catch (Exception e) {
-            throw new RuntimeException("调用失败");
+            // 容错机制
+            TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
+            rpcResponse = tolerantStrategy.doTolerant(null, e);
         }
+        return rpcResponse.getData();
     }
 }

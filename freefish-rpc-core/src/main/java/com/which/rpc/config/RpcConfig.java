@@ -3,6 +3,7 @@ package com.which.rpc.config;
 import lombok.Data;
 
 import static com.which.rpc.fault.retry.RetryStrategyKeys.NO;
+import static com.which.rpc.fault.tolerant.TolerantStrategyKeys.FAIL_FAST;
 import static com.which.rpc.loadbalancer.LoadBalancerKeys.ROUND_ROBIN;
 import static com.which.rpc.serializer.SerializerKeys.JDK;
 
@@ -58,5 +59,10 @@ public class RpcConfig {
      * 重试策略
      */
     private String retryStrategy = NO;
+
+    /**
+     * 容错策略
+     */
+    private String tolerantStrategy = FAIL_FAST;
 
 }

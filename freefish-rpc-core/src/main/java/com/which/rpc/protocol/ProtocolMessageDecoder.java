@@ -22,7 +22,6 @@ public class ProtocolMessageDecoder {
      * @return
      * @throws IOException
      */
-
     public static ProtocolMessage<?> decode(Buffer buffer) throws IOException {
         // 分别从指定位置读出 Buffer
         ProtocolMessage.Header header = new ProtocolMessage.Header();
