@@ -2,6 +2,7 @@ package com.which.example.consumer;
 
 import com.which.example.common.model.User;
 import com.which.example.common.service.UserService;
+import com.which.rpc.bootstrap.ConsumerBootstrap;
 import com.which.rpc.proxy.ServiceProxyFactory;
 
 /**
@@ -12,6 +13,9 @@ import com.which.rpc.proxy.ServiceProxyFactory;
 public class EasyConsumerExample {
 
     public static void main(String[] args) {
+        // 服务提供者初始化
+        ConsumerBootstrap.init();
+
         // 动态代理 获取 userService
         UserService userService = ServiceProxyFactory.getProxy(UserService.class);
         User user = new User();
@@ -23,8 +27,5 @@ public class EasyConsumerExample {
         } else {
             System.out.println("user == null");
         }
-
-//        long number = userService.getNumber();
-//        System.out.println(number);
     }
 }
