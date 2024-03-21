@@ -1,5 +1,6 @@
 package com.which.starter.bootstrap;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.which.rpc.RpcApplication;
 import com.which.rpc.config.RegistryConfig;
 import com.which.rpc.config.RpcConfig;
@@ -8,9 +9,13 @@ import com.which.rpc.registry.LocalRegistry;
 import com.which.rpc.registry.Registry;
 import com.which.rpc.registry.RegistryFactory;
 import com.which.starter.annotation.RpcService;
+import com.which.starter.client.RpcClient;
+import com.which.starter.config.RpcSdkConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+
+import javax.annotation.Resource;
 
 /**
  * Rpc 服务提供者启动
@@ -20,6 +25,9 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  */
 @Slf4j
 public class RpcProviderBootstrap implements BeanPostProcessor {
+
+    @Resource
+    private RpcClient rpcClient;
 
     /**
      * Bean 初始化后执行，注册服务
@@ -42,8 +50,12 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
             // 本地注册
             LocalRegistry.register(serviceName, beanClass);
 
-            // 全局配置
-            final RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+            RpcSdkConfig rpcSdkConfig = rpcClient.getRpcSdkConfig();
+            RpcConfig rpcConfig = new RpcConfig();
+            BeanUtil.copyProperties(rpcSdkConfig, rpcConfig);
+            // 添加到全局配置
+            RpcApplication.init(rpcConfig);
+
             // 注册服务到注册中心
             RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
             Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());

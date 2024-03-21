@@ -1,13 +1,15 @@
 package com.which.starter.bootstrap;
 
-import com.which.rpc.RpcApplication;
-import com.which.rpc.config.RpcConfig;
+import cn.hutool.setting.dialect.Props;
 import com.which.rpc.server.tcp.VertxTcpServer;
 import com.which.starter.annotation.EnableRpc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * rpc init引导
@@ -24,20 +26,20 @@ public class RpcInitBootstrap implements ImportBeanDefinitionRegistrar {
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         // 获取 EnableRpc 注解的属性值
-        boolean needServer = (boolean) importingClassMetadata
-                .getAnnotationAttributes(EnableRpc.class.getName())
-                .get("needServer");
-
-        // RPC 框架初始化（配置和注册中心）
-        RpcApplication.init();
-
-        // 全局配置
-        final RpcConfig rpcConfig = RpcApplication.getRpcConfig();
-
+        Map<String, Object> annotationAttributes = importingClassMetadata
+                .getAnnotationAttributes(EnableRpc.class.getName());
+        if (annotationAttributes == null) {
+            log.error("启动 server 失败");
+            return;
+        }
+        boolean needServer = (boolean) annotationAttributes.get("needServer");
         // 启动服务器
         if (needServer) {
             VertxTcpServer vertxTcpServer = new VertxTcpServer();
-            vertxTcpServer.doStart(rpcConfig.getServerPort());
+            Props props = new Props("application.yml");
+            int serverPort = Integer.parseInt(Optional.ofNullable(props.get("server-port"))
+                    .orElse(8888).toString());
+            vertxTcpServer.doStart(serverPort);
         } else {
             log.info("不启动 server");
         }

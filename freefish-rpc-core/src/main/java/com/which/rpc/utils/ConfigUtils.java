@@ -7,6 +7,7 @@ import cn.hutool.setting.dialect.Props;
  * 配置工具类
  *
  * @author which
+ * @date 2024/03/21
  */
 public class ConfigUtils {
 
@@ -20,6 +21,17 @@ public class ConfigUtils {
      */
     public static <T> T loadConfig(Class<T> tClass, String prefix) {
         return loadConfig(tClass, prefix, "");
+    }
+
+    /**
+     * 加载配置对象
+     *
+     * @param tClass
+     * @param <T>
+     * @return
+     */
+    public static <T> T loadConfig(Class<T> tClass) {
+        return new Props("application.yml").toBean(tClass);
     }
 
     /**

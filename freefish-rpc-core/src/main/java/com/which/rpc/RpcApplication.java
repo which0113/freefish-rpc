@@ -7,8 +7,6 @@ import com.which.rpc.registry.RegistryFactory;
 import com.which.rpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.which.rpc.constant.RpcConstant.DEFAULT_CONFIG_PREFIX;
-
 /**
  * RPC 框架应用
  * 相当于 holder，存放了项目全局用到的变量。双检锁单例模式实现
@@ -44,7 +42,8 @@ public class RpcApplication {
     public static void init() {
         RpcConfig newRpcConfig;
         try {
-            newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class, DEFAULT_CONFIG_PREFIX);
+            // newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class, DEFAULT_CONFIG_PREFIX);
+            newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class);
         } catch (Exception e) {
             // 配置加载失败，使用默认值
             newRpcConfig = new RpcConfig();
