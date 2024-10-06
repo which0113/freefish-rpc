@@ -1,5 +1,5 @@
 <p align="center">
-    <img src=https://img.freefish.love/logo.png width=188/>
+    <img src=doc/logo.png width=188/>
 </p>
 <h1 align="center">FreeFish-RPC</h1>
 
